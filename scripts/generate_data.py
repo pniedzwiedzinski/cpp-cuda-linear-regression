@@ -24,23 +24,26 @@ def noised_f(x: float) -> float:
     y = true_y + noise if randint(0, 1) else true_y - noise
     return y
 
+
 def generate_data(entries: int = 50) -> tuple:
     data_x = []
     data_y = []
 
-    for entry in range(entries):
+    for _ in range(entries):
         x = random() * 20
         y = noised_f(x)
         data_x.append(x)
         data_y.append(y)
 
     return (data_x, data_y)
-    
+
+
 def save_to_csv(data_x: list, data_y: list) -> None:
     with open("./data.csv", "w") as f:
         writer = csv.writer(f)
         for entry in zip(data_x, data_y):
             writer.writerow(entry)
+
 
 if __name__ == "__main__":
     data_x, data_y = generate_data()
