@@ -6,11 +6,12 @@
 
 #include "load.h"
 #include <iostream>
+#include "matrix.h"
 
 using namespace std;
 
-Array2D* loadData(int n, int p) {
-    Array2D* data = new Array2D(n, p);
+Matrix* loadData(int n, int p) {
+    Matrix* data = new Matrix(n, p);
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < p; j++) {
             float a;
