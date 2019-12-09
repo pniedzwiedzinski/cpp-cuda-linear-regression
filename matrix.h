@@ -2,11 +2,11 @@ class Matrix {
    public:
     Matrix(int r, int c);
 
-    float* array;
+    float** array;
     int columns;
+    int rows;
 
-    float& index(int row, int column);
-    void update(int row, int column, float value);
+    float** operator[](int row);
 };
 
 void transpose2D(Matrix* A, Matrix* B);

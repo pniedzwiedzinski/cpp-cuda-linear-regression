@@ -10,23 +10,21 @@
 using namespace std;
 
 Matrix::Matrix(int r, int c) {
-  array = new float[r * c];
+  array = new float*[r * c];
   columns = c;
+  rows = r;
 }
 
-float& Matrix::index(int row, int column) {
-  return array[columns * row + column];
-}
-void Matrix::update(int row, int column, float value) {
-  array[columns * row + column] = value;
+float** Matrix::operator[](int row) {
+  return slice(array[row], columns, 0);
 }
 
 __global__ void transpose2D (Matrix* A, Matrix* B) {
-  int x = threadIdx.x;
-  int y = blockIdx.x;
+  int x = blockIdx.x * blockDim.x + threadIdx.x;
+  int y = blockIdx.y * blockDim.y + threadIdx.y;
 
   if (y!=x) {
-    B->update(y, x, A->index(x, y));
+    B[y][x] = A[x][y];
   }
 }
 
@@ -34,7 +32,7 @@ __global__ void mean2D (Matrix* matrix, int cols, float* acc) {
   int row = threadIdx.x;
   float sum = 0.0;
   for (int i = 0; i < cols; i++) {
-    sum += matrix->index(i, row);
+    sum += matrix[i][row];
   }
   *acc = sum/cols;
 }
