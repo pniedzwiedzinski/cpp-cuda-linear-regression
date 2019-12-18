@@ -37,7 +37,7 @@ __global__ void mean2D (float* matrix, float* acc) {
     sum += matrix[row * COLUMNS + i];
   }
   *acc = sum/COLUMNS;
-  printf("%v", *acc)
+  printf("%v", *acc);
 }
 
 
@@ -78,6 +78,6 @@ int main() {
   cudaMalloc((void**) &cudaAcc, sizeof(float));
   cudaMemcpy(cudaMatrix, zeroMatrix, size, cudaMemcpyHostToDevice);
 
-  mean2D<<<ROWS>>>(cudaMatrix, cudaAcc);
+  mean2D <<< ROWS >>> (cudaMatrix, cudaAcc);
   return 0;
 }
