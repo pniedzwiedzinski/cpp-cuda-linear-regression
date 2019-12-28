@@ -94,5 +94,6 @@ int main() {
   cudaMemcpy(cudaMatrix, zeroMatrix, size, cudaMemcpyHostToDevice);
 
   mean2D <<< 1, ROWS >>> (cudaMatrix, cudaAcc);
+  std::cout << *cudaAcc;
   return 0;
 }
