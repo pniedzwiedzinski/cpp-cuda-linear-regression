@@ -92,6 +92,6 @@ int main() {
   cudaMalloc((void**) &cudaAcc, sizeof(float));
   cudaMemcpy(cudaMatrix, zeroMatrix, size, cudaMemcpyHostToDevice);
 
-  //mean2D <<< 1, ROWS >>> (cudaMatrix, cudaAcc);
+  mean2D <<< 1, ROWS >>> (cudaMatrix, cudaAcc);
   return 0;
 }
