@@ -83,15 +83,15 @@ void printMatrix(float* matrix) {
 
 int main() {
   float* acc;
-  float* zeroMatrix = createMatrix();
-  printMatrix(zeroMatrix);
   int size = (ROWS*COLUMNS)*sizeof(float);
+  float* zeroMatrix = (float*)malloc(size);
+  printMatrix(zeroMatrix);
 
   float* cudaMatrix, cudaAcc;
   cudaMalloc((void**) &cudaMatrix, size);
   cudaMalloc((void**) &cudaAcc, sizeof(float));
   cudaMemcpy(cudaMatrix, zeroMatrix, size, cudaMemcpyHostToDevice);
 
-  mean2D <<< 1, ROWS >>> (cudaMatrix, cudaAcc);
+  //mean2D <<< 1, ROWS >>> (cudaMatrix, cudaAcc);
   return 0;
 }
