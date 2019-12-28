@@ -75,7 +75,7 @@ void printMatrix(float* matrix) {
   for i_in_ROWS {
     std::cout << "| ";
     for j_in_COLUMNS {
-      cout << matrix[i * COLUMNS + j] << " ";
+      std::cout << matrix[i * COLUMNS + j] << " ";
     }
     std::cout << "|\n";
   }
@@ -84,7 +84,7 @@ void printMatrix(float* matrix) {
 int main() {
   float* acc;
   float* zeroMatrix = createMatrix();
-  printMatrix(zreoMatrix);
+  printMatrix(zeroMatrix);
   int size = (ROWS*COLUMNS)*sizeof(float);
 
   float* cudaMatrix, cudaAcc;
