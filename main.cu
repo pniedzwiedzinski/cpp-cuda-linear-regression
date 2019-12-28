@@ -3,6 +3,9 @@
 #define COLUMNS 2
 #define ROWS 100
 
+#define i_in_ROWS (int i = 0; i < ROWS; i++)
+#define j_in_COLUMNS (int j = 0; j < COLUMNS; j++)
+
 /*
 * Matrix is represented as 1D array. To access value in n-th row and m-th column
 * type `array[n*COLUMNS + m];`
@@ -60,17 +63,28 @@ __global__ void matmul2D (float* A, float* B, float* Acc) {
 
 float* createMatrix() {
   float* m = new float[ROWS * COLUMNS];
-  for (int i = 0; i < ROWS; i++) {
-    for (int j = 0; j < COLUMNS; j++) {
+  for i_in_ROWS {
+    for j_in_COLUMNS {
       m[i * COLUMNS + j] = 0;
     }
   }
   return m;
 }
 
+void printMatrix(float* matrix) {
+  for i_in_ROWS {
+    std::cout << "| ";
+    for j_in_COLUMNS {
+      cout << matrix[i * COLUMNS + j] << " ";
+    }
+    std::cout << "|\n";
+  }
+}
+
 int main() {
   float* acc;
   float* zeroMatrix = createMatrix();
+  printMatrix(zreoMatrix);
   int size = (ROWS*COLUMNS)*sizeof(float);
 
   float* cudaMatrix, cudaAcc;
