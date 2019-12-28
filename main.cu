@@ -39,8 +39,7 @@ __global__ void mean2D (float* matrix, float* acc) {
   for (int i = 0; i < COLUMNS; i++) {
     sum += matrix[row * COLUMNS + i];
   }
-  *acc = sum/COLUMNS;
-  printf("%v", *acc);
+  *acc = COLUMNS;
 }
 
 
