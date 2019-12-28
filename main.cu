@@ -87,7 +87,7 @@ int main() {
   float* zeroMatrix = (float*)malloc(size);
   printMatrix(zeroMatrix);
 
-  float** cudaMatrix;
+  float* cudaMatrix;
   float* cudaAcc;
   cudaMalloc((void**) &cudaMatrix, size);
   cudaMalloc((void**) &cudaAcc, sizeof(float));
