@@ -1,10 +1,28 @@
 #include <iostream>
 
-#define COLUMNS 2
-#define ROWS 100
 
-#define i_in_ROWS (int i = 0; i < ROWS; i++)
-#define j_in_COLUMNS (int j = 0; j < COLUMNS; j++)
+struct Matrix {
+    float* arr;
+    int rows;
+    int columns;
+}
+
+
+/*
+* Some basic functions to play out with CUDA
+*/
+__global__ void cuda_hello_world() {
+    printf("Hello World from GPU!\n");
+}
+
+__global__ void assign (int* a, int* b) {
+    *b = *a;
+}
+
+__global__ void add(int *a, int *b, int *c)
+{
+    *c = *a + *b;
+}
 
 /*
 * Matrix is represented as 1D array. To access value in n-th row and m-th column
@@ -39,7 +57,7 @@ __global__ void mean2D (float* matrix, float* acc) {
   for (int i = 0; i < COLUMNS; i++) {
     sum += matrix[row * COLUMNS + i];
   }
-  *acc = COLUMNS;
+  *acc = sum / COLUMNS;
 }
 
 
@@ -60,20 +78,10 @@ __global__ void matmul2D (float* A, float* B, float* Acc) {
   Acc[row * COLUMNS + col] = sum;
 }
 
-float* createMatrix() {
-  float* m = new float[ROWS * COLUMNS];
-  for i_in_ROWS {
-    for j_in_COLUMNS {
-      m[i * COLUMNS + j] = 0;
-    }
-  }
-  return m;
-}
-
-void printMatrix(float* matrix) {
-  for i_in_ROWS {
+void printMatrix(Matrix matrix) {
+  for (i = 0; i < matrix.cols; i++) {
     std::cout << "| ";
-    for j_in_COLUMNS {
+    for (j = 0; j < matrix.rows; j++) {
       std::cout << matrix[i * COLUMNS + j] << " ";
     }
     std::cout << "|\n";
@@ -81,19 +89,55 @@ void printMatrix(float* matrix) {
 }
 
 int main() {
-  float* acc;
-  int size = (ROWS*COLUMNS)*sizeof(float);
-  float* zeroMatrix = (float*)malloc(size);
-  printMatrix(zeroMatrix);
-
-  float* cudaMatrix;
-  float* cudaAcc;
-  cudaMalloc((void**) &cudaMatrix, size);
-  cudaMalloc((void**) &cudaAcc, sizeof(float));
-  cudaMemcpy(cudaMatrix, zeroMatrix, size, cudaMemcpyHostToDevice);
-
-  mean2D <<< 1, ROWS >>> (cudaMatrix, cudaAcc);
-  cudaMemcpy(acc, cudaAcc, sizeof(float), cudaMemcpyDeviceToHost);
-  std::cout << *acc;
+  //
+  //
+  // SOME MATRIX
+  //float* acc;
+  //int size = (ROWS*COLUMNS)*sizeof(float);
+  //float* zeroMatrix = (float*)malloc(size);
+  //printMatrix(zeroMatrix);
+//
+  //float* cudaMatrix;
+  //float* cudaAcc;
+  //cudaMalloc((void**) &cudaMatrix, size);
+  //cudaMalloc((void**) &cudaAcc, sizeof(float));
+  //cudaMemcpy(cudaMatrix, zeroMatrix, size, cudaMemcpyHostToDevice);
+  //std::cout << "test\n";
+  //mean2D <<< 1, ROWS >>> (cudaMatrix, cudaAcc);
+  //cudaMemcpy(acc, cudaAcc, sizeof(float), cudaMemcpyDeviceToHost);
+  //std::cout << *acc;
+  //
+  //
+  // ASSIGN
+  //int a = 5, b;
+  //int *cudaA, *cudaB;
+  //int size = sizeof(int);
+  //cudaMalloc((void**) &cudaA, size);
+  //cudaMalloc((void**) &cudaB, size);
+  //cudaMemcpy(cudaA, &a, size, cudaMemcpyHostToDevice);
+  //assign <<< 1, 1 >>> (cudaA, cudaB);
+  //cudaMemcpy(&b, cudaB, size, cudaMemcpyDeviceToHost);
+  //std::cout << b;
+  //
+  //
+  // HELLO WORLD
+  //cuda_hello_world<<<1,1>>>();
+  //
+  //
+  // ADD
+  //int a = 2, b = 3, c;
+  //int *cudaA, *cudaB, *cudaC;
+  //int size = sizeof(int);
+  //cudaMalloc((void **)&cudaA, size);
+  //cudaMalloc((void **)&cudaB, size);
+  //cudaMalloc((void **)&cudaC, size);
+//
+  //cudaMemcpy(cudaA, &a, size, cudaMemcpyHostToDevice);
+  //cudaMemcpy(cudaB, &b, size, cudaMemcpyHostToDevice);
+  //add<<<1,1>>>(cudaA, cudaB, cudaC);
+//
+  //cudaMemcpy(&c, cudaC, size, cudaMemcpyDeviceToHost);
+//
+  //std::cout << c;
   return 0;
 }
