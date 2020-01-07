@@ -2,9 +2,14 @@
 
 
 struct Matrix {
+    Matrix(_rows, _columns): rows(_rows), columns(_columns), arr(new float[_rows * _columns]);
     float* arr;
     int rows;
     int columns;
+
+    int size() {
+        return sizeof(float) * rows * columns;
+    }
 }
 
 
@@ -88,8 +93,42 @@ void printMatrix(Matrix matrix) {
   }
 }
 
+Matrix* matmul(Matrix* A, Matrix* B) {
+    if (A->columns != B->rows) {
+        std::cout << "Matrix dim mismatch, got ("
+                  << A->rows
+                  << ","
+                  << A->columns
+                  << ") and ("
+                  << B->rows
+                  << ","
+                  << B->columns
+                  << ")\n";
+        throw std::invalid_argument( "Invalid input" );
+    }
+    Matrix* result = new Matrix(A->rows, B->columns);
+    float* cudaA;
+    float* cudaB;
+    float* cudaAcc;
+    cudaMalloc((void**) &cudaA, A->size());
+    cudaMalloc((void**) &cudaB, B->size());
+    cudaMalloc((void**) &cudaAcc; result->size());
+
+    cudaMemcpy(cudaA, A->arr, A->size(), cudaMemcpyHostToDevice);
+    cudaMemcpy(cudaB, B->arr, B->size(), cudaMemcpyHostToDevice);
+
+
+    matmul2D <<< A->columns, A->rows >>> (cudaA, cudaB);
+}
+
 int main() {
   //
+  Matrix* A = new Matrix(2, 2);
+  Matrix* B = new Matrix(2, 2);
+
+  Matrix* mul = matmul(A, B);
+
+  printMatrix(*mul);
   //
   // SOME MATRIX
   //float* acc;
