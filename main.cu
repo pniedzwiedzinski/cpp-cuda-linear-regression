@@ -118,7 +118,11 @@ Matrix* matmul(Matrix* A, Matrix* B) {
     cudaMemcpy(cudaB, B->arr, B->size(), cudaMemcpyHostToDevice);
 
 
-    matmul2D <<< A->columns, A->rows >>> (cudaA, cudaB);
+    matmul2D <<< A->columns, A->rows >>> (cudaA, cudaB, cudaAcc);
+
+    cudaMemcpy(result->arr, cudaAcc, result->size(), cudaMemcpyDeviceToHost);
+
+    return result;
 }
 
 int main() {
