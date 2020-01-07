@@ -2,15 +2,17 @@
 
 
 struct Matrix {
-    Matrix(_rows, _columns): rows(_rows), columns(_columns), arr(new float[_rows * _columns]);
     float* arr;
     int rows;
     int columns;
 
+    Matrix(int _rows, int _columns, float* _arr):
+        rows(_rows), columns(_columns), arr(_arr) {}
+
     int size() {
         return sizeof(float) * rows * columns;
     }
-}
+};
 
 
 /*
@@ -41,14 +43,14 @@ __global__ void add(int *a, int *b, int *c)
 *
 *     transpose2D<<< columns, rows >>>(matrix, acc);
 */
-__global__ void transpose2D (float* matrix, float* acc) {
-  int row = threadIdx.x;
-  int col = blockIdx.x;
+//__global__ void transpose2D (float* matrix, float* acc) {
+//  int row = threadIdx.x;
+  //int col = blockIdx.x;
 
-  if (row!=col) {
-    acc[col * COLUMNS + row] = matrix[row * COLUMNS + col];
-  }
-}
+  //if (row!=col) {
+    //acc[col * COLUMNS + row] = matrix[row * COLUMNS + col];
+  //}
+//}
 
 
 /*
@@ -56,14 +58,14 @@ __global__ void transpose2D (float* matrix, float* acc) {
 *
 *     mean2D<<< rows >>>(matrix, acc);
 */
-__global__ void mean2D (float* matrix, float* acc) {
-  int row = threadIdx.x;
-  float sum = 0.0;
-  for (int i = 0; i < COLUMNS; i++) {
-    sum += matrix[row * COLUMNS + i];
-  }
-  *acc = sum / COLUMNS;
-}
+//__global__ void mean2D (float* matrix, float* acc) {
+  //int row = threadIdx.x;
+  //float sum = 0.0;
+  //for (int i = 0; i < COLUMNS; i++) {
+    //sum += matrix[row * COLUMNS + i];
+  //}
+  //*acc = sum / COLUMNS;
+//}
 
 
 /*
@@ -71,7 +73,7 @@ __global__ void mean2D (float* matrix, float* acc) {
 *
 *     matmul2D<<< columns, rows >>>(A, B, Acc);
 */
-__global__ void matmul2D (float* A, float* B, float* Acc) {
+__global__ void matmul2D (float* A, float* B, float* Acc, int COLUMNS) {
   int row = threadIdx.x;
   int col = blockIdx.x;
 
@@ -84,10 +86,10 @@ __global__ void matmul2D (float* A, float* B, float* Acc) {
 }
 
 void printMatrix(Matrix matrix) {
-  for (i = 0; i < matrix.cols; i++) {
+  for (int i = 0; i < matrix.columns; i++) {
     std::cout << "| ";
-    for (j = 0; j < matrix.rows; j++) {
-      std::cout << matrix[i * COLUMNS + j] << " ";
+    for (int j = 0; j < matrix.rows; j++) {
+      std::cout << matrix.arr[i * matrix.columns + j] << " ";
     }
     std::cout << "|\n";
   }
@@ -106,19 +108,20 @@ Matrix* matmul(Matrix* A, Matrix* B) {
                   << ")\n";
         throw std::invalid_argument( "Invalid input" );
     }
-    Matrix* result = new Matrix(A->rows, B->columns);
+    float* arrResult = new float[A->rows * B->columns];
+    Matrix* result = new Matrix(A->rows, B->columns, arrResult);
     float* cudaA;
     float* cudaB;
     float* cudaAcc;
     cudaMalloc((void**) &cudaA, A->size());
     cudaMalloc((void**) &cudaB, B->size());
-    cudaMalloc((void**) &cudaAcc; result->size());
+    cudaMalloc((void**) &cudaAcc, result->size());
 
     cudaMemcpy(cudaA, A->arr, A->size(), cudaMemcpyHostToDevice);
     cudaMemcpy(cudaB, B->arr, B->size(), cudaMemcpyHostToDevice);
 
 
-    matmul2D <<< A->columns, A->rows >>> (cudaA, cudaB, cudaAcc);
+    matmul2D <<< A->columns, A->rows >>> (cudaA, cudaB, cudaAcc, A->columns);
 
     cudaMemcpy(result->arr, cudaAcc, result->size(), cudaMemcpyDeviceToHost);
 
@@ -127,8 +130,10 @@ Matrix* matmul(Matrix* A, Matrix* B) {
 
 int main() {
   //
-  Matrix* A = new Matrix(2, 2);
-  Matrix* B = new Matrix(2, 2);
+  float* arrA = new float[2*2]{1, 1, 2, 2};
+  float* arrB = new float[2*2]{3, 3, 4, 4};
+  Matrix* A = new Matrix(2, 2, arrA);
+  Matrix* B = new Matrix(2, 2, arrB);
 
   Matrix* mul = matmul(A, B);
 
