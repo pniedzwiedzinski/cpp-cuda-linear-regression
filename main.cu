@@ -1,16 +1,24 @@
 #include <iostream>
 
+/*
+* Matrix is represented as 1D array. To access value in n-th row and m-th column
+* type `array[n*COLUMNS + m];`
+*/
 
 struct Matrix {
     float* arr;
     int rows;
     int columns;
 
-    Matrix(int _rows, int _columns, float* _arr):
-        rows(_rows), columns(_columns), arr(_arr) {}
+    Matrix(int _rows, int _columns):
+        rows(_rows), columns(_columns), arr(new float[_rows * _columns]) {}
 
     int size() {
         return sizeof(float) * rows * columns;
+    }
+
+    void set(int row, int col, float value) {
+        arr[row * columns + col] = value;
     }
 };
 
@@ -31,10 +39,6 @@ __global__ void add(int *a, int *b, int *c)
     *c = *a + *b;
 }
 
-/*
-* Matrix is represented as 1D array. To access value in n-th row and m-th column
-* type `array[n*COLUMNS + m];`
-*/
 
 
 /*
@@ -95,6 +99,9 @@ void printMatrix(Matrix matrix) {
   }
 }
 
+/*
+ * Return product of two matrices
+*/
 Matrix* matmul(Matrix* A, Matrix* B) {
     if (A->columns != B->rows) {
         std::cout << "Matrix dim mismatch, got ("
@@ -109,7 +116,7 @@ Matrix* matmul(Matrix* A, Matrix* B) {
         throw std::invalid_argument( "Invalid input" );
     }
     float* arrResult = new float[A->rows * B->columns];
-    Matrix* result = new Matrix(A->rows, B->columns, arrResult);
+    Matrix* result = new Matrix(A->rows, B->columns);
     float* cudaA;
     float* cudaB;
     float* cudaAcc;
@@ -128,12 +135,31 @@ Matrix* matmul(Matrix* A, Matrix* B) {
     return result;
 }
 
+Matrix* loadData() {
+    int n, p;
+    float temp;
+    cin >> n;
+    cin >> p;
+
+    Matrix* data = new Matrix(n, p);
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < p+1; j++) {
+            cin >> temp;
+            data->set(i, j, temp);
+        }
+    }
+    return data;
+}
+
 int main() {
-  //
-  float* arrA = new float[2*2]{1, 1, 2, 2};
-  float* arrB = new float[2*2]{3, 3, 4, 4};
-  Matrix* A = new Matrix(2, 2, arrA);
-  Matrix* B = new Matrix(2, 2, arrB);
+
+  //Matrix* A = new Matrix(2, 2);
+  //A->arr = new float[2*2]{1, 1, 2, 2};
+  //Matrix* B = new Matrix(2, 2);
+  //B->arr = new float[2*2]{3, 3, 4, 4};
+  Matrix* A = loadData();
+  Matrix* B = loadData();
+
 
   Matrix* mul = matmul(A, B);
 
