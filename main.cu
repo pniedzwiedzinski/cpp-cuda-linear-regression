@@ -109,7 +109,7 @@ Matrix* transpose(Matrix* matrix) {
    cudaMemcpy(cudaOriginal, matrix->arr, matrix->size(), cudaMemcpyHostToDevice);
 
    transpose2D <<< matrix->columns, matrix->rows >>> (cudaOriginal, cudaResult, matrix->columns);
-   cudaMemcpy(result->arr, cudaResult, result->size, cudaMemcpyDeviceToHost);
+   cudaMemcpy(result->arr, cudaResult, result->size(), cudaMemcpyDeviceToHost);
    return result;
 }
 
