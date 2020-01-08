@@ -47,14 +47,14 @@ __global__ void add(int *a, int *b, int *c)
 *
 *     transpose2D<<< columns, rows >>>(matrix, acc);
 */
-//__global__ void transpose2D (float* matrix, float* acc) {
-//  int row = threadIdx.x;
-  //int col = blockIdx.x;
+__global__ void transpose2D (float* matrix, float* acc, int COLUMNS) {
+  int row = threadIdx.x;
+  int col = blockIdx.x;
 
-  //if (row!=col) {
-    //acc[col * COLUMNS + row] = matrix[row * COLUMNS + col];
-  //}
-//}
+  if (row!=col) {
+    acc[col * COLUMNS + row] = matrix[row * COLUMNS + col];
+  }
+}
 
 
 /*
@@ -99,6 +99,20 @@ void printMatrix(Matrix matrix) {
   }
 }
 
+Matrix* transpose(Matrix* matrix) {
+   Matrix* result = new Matrix(matrix->columns, matrix->rows);
+   float* cudaOriginal;
+   float* cudaResult;
+   cudaMalloc((void**) &cudaOriginal, matrix->size());
+   cudaMalloc((void**) &cudaResult, result->size());
+
+   cudaMemcpy(cudaOriginal, matrix->arr, matrix->size(), cudaMemcpyHostToDevice);
+
+   transpose2d <<< matrix->columns, matrix->rows >>> (cudaOriginal, cudaResult);
+   cudaMemcpy(result->arr, cudaResult, result->size, cudaMemcpyDeviceToHost);
+   return result;
+}
+
 /*
  * Return product of two matrices
 */
@@ -115,7 +129,6 @@ Matrix* matmul(Matrix* A, Matrix* B) {
                   << ")\n";
         throw std::invalid_argument( "Invalid input" );
     }
-    float* arrResult = new float[A->rows * B->columns];
     Matrix* result = new Matrix(A->rows, B->columns);
     float* cudaA;
     float* cudaB;
@@ -153,17 +166,20 @@ Matrix* loadData() {
 
 int main() {
 
-  //Matrix* A = new Matrix(2, 2);
-  //A->arr = new float[2*2]{1, 1, 2, 2};
-  //Matrix* B = new Matrix(2, 2);
-  //B->arr = new float[2*2]{3, 3, 4, 4};
-  Matrix* A = loadData();
-  Matrix* B = loadData();
+  Matrix* A = new Matrix(2, 2);
+  A->arr = new float[2*2]{1, 1, 2, 2};
+  Matrix* B = new Matrix(2, 2);
+  B->arr = new float[2*2]{3, 3, 4, 4};
+  //Matrix* A = loadData();
+  //Matrix* B = loadData();
 
 
   Matrix* mul = matmul(A, B);
 
   printMatrix(*mul);
+
+  Matrix* t = transpose(mul);
+  printMatrix(*t);
   //
   // SOME MATRIX
   //float* acc;
