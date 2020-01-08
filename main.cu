@@ -51,9 +51,7 @@ __global__ void transpose2D (float* matrix, float* acc, int COLUMNS) {
   int row = threadIdx.x;
   int col = blockIdx.x;
 
-  if (row!=col) {
-    acc[col * COLUMNS + row] = matrix[row * COLUMNS + col];
-  }
+  acc[col * COLUMNS + row] = matrix[row * COLUMNS + col];
 }
 
 
