@@ -108,7 +108,7 @@ Matrix* transpose(Matrix* matrix) {
 
    cudaMemcpy(cudaOriginal, matrix->arr, matrix->size(), cudaMemcpyHostToDevice);
 
-   transpose2d <<< matrix->columns, matrix->rows >>> (cudaOriginal, cudaResult);
+   transpose2D <<< matrix->columns, matrix->rows >>> (cudaOriginal, cudaResult);
    cudaMemcpy(result->arr, cudaResult, result->size, cudaMemcpyDeviceToHost);
    return result;
 }
@@ -151,13 +151,13 @@ Matrix* matmul(Matrix* A, Matrix* B) {
 Matrix* loadData() {
     int n, p;
     float temp;
-    cin >> n;
-    cin >> p;
+    std::cin >> n;
+    std::cin >> p;
 
     Matrix* data = new Matrix(n, p);
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < p+1; j++) {
-            cin >> temp;
+            std::cin >> temp;
             data->set(i, j, temp);
         }
     }
